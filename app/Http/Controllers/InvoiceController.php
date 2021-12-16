@@ -11,12 +11,6 @@ class InvoiceController extends Controller
         $max = DB::table('invoices')
         ->join('invoice_items' , 'invoice_items.InvoiceId' , 'invoices.InvoiceId')
         ->select('invoices.BillingCountry' , DB::raw('SUM(invoice_items.UnitPrice) AS total'))
-        ->whereIn('invoice_items.InvoiceId', function($query)
-            {
-                $query->select("(MAX(`invoice_items.InvoiceId`))")
-                    ->from('invoice_items')
-                    ->whereRaw('invoice_items.InvoiceId = invoices.InvoiceId');
-            })
         ->groupBy('invoices.BillingCountry')
         ->get();
         dd($max);
