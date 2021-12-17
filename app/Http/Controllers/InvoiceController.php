@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\InvoiceItem;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
+
+use function PHPSTORM_META\elementType;
 
 class InvoiceController extends Controller
 {
@@ -13,14 +16,22 @@ class InvoiceController extends Controller
         ->select('invoices.BillingCountry' , DB::raw('SUM(invoice_items.UnitPrice) AS total'))
         ->groupBy('invoices.BillingCountry')
         ->get();
-        dd($max);
 
-        // $max = DB::table('invoices')
-        // ->join('invoice_items' , 'invoice_items.InvoiceId' , 'invoices.InvoiceId')
-        // ->select(DB::raw('COUNT(invoice_items.InvoiceId) AS total'))
-        // ->groupBy('invoice_items.InvoiceId')
-        // ->get();
-        // dd($max);
+        $arrayData=[];
+        $finalArray=[];
 
+        foreach($max as $m){
+            array_push($arrayData , $m);
+        }
+        
+        $maxTotal = max(array_column($arrayData, 'total'));
+
+        foreach ( $arrayData as $element ) {
+            if ( $maxTotal == $element->total ) {
+                array_push($finalArray , $element);
+            }
+        }
+
+        dd($finalArray);
     }
 }
